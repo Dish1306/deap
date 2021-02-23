@@ -56,8 +56,6 @@ jobs:
     - task: UsePythonVersion@0
       inputs:
         versionSpec: 3.7
-        ${{ if ne(parameters.architecture, '') }}:
-          architecture: ${{ parameters.architecture }}
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
     - script: |
