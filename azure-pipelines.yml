@@ -57,7 +57,7 @@ jobs:
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git && \
-                    $PYTHON -m pip install --upgrade pip setuptools wheel pytest-azurepipelines twine && \
+                    $PYTHON -m pip install --upgrade python3-pip setuptools wheel pytest-azurepipelines twine && \
                     $PYTHON -m pip wheel . -w wheelhouse/"
       displayName: 'Running AArch64 build'
       env:
