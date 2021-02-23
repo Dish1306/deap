@@ -46,7 +46,7 @@ jobs:
         Py38 Arm64:
           python.version: '3.8'
         Py39 Arm64:
-          python.vesuin: '3.9'
+          python.version: '3.9'
     steps:
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
@@ -56,7 +56,7 @@ jobs:
                    -e HOST_USER_ID \
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
-                    apt-get update -qq && apt-get install -qq make $PYTHON $PYTHON-pip lib$PYTHON-dev git && \
+                    apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git && \
                     $PYTHON -m pip install --upgrade pip setuptools wheel pytest-azurepipelines twine && \
                     $PYTHON -m pip wheel . -w wheelhouse/"
       displayName: 'Running AArch64 build'
