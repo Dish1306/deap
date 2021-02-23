@@ -38,16 +38,15 @@ jobs:
     strategy:
       matrix:
         Py35 Arm64:
-          python.code: 'cp35-cp35m'
-          manylinux: 'manylinux_aarch64'
+          python.version: '3.5'
         Py36 Arm64:
           python.version: '3.6'
         Py37 Arm64:
-          python.code: '3.7'
+          python.version: '3.7'
         Py38 Arm64:
-          python.code: '3.8'
+          python.version: '3.8'
         Py39 Arm64:
-          python.code: '3.9'
+          python.vesuin: '3.9'
     steps:
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
