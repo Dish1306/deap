@@ -74,6 +74,34 @@ jobs:
         twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar dist/*
       displayName: 'Publish wheel to PyPi'
   
+  - job: Aarch64_Manylinux2014Build
+    pool:
+      vmImage: 'ubuntu-18.04'
+    container: quay.io/pypa/manylinux2014_aarch64:latest
+    variables:
+      python: /opt/python/cp37-cp37m/bin/python
+    steps:
+    - script: docker run --rm --privileged hypriot/qemu-register
+      displayName: 'Registering qemu'
+    - script: |
+        for PYBIN in /opt/python/*/bin; do
+          "${PYBIN}/pip" install --user numpy twine
+        done
+      displayName: 'Install dependencies and build tools'
+    - script: |
+        for PYBIN in /opt/python/*/bin; do
+          "${PYBIN}/pip" wheel . -w wheelhouse/
+        done
+      displayName: 'Build wheels'
+    - script: |
+        for whl in wheelhouse/deap*.whl; do
+          auditwheel repair "$whl" --plat manylinux2014_aarch64 -w wheelhouse-manylinux/
+        done
+      displayName: 'Audit wheels'
+    - script: |
+        $(python) -m twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar wheelhouse-manylinux/*
+      displayName: 'Publish wheel to PyPi'
+      
   - job: Manylinux2010Build
     pool:
       vmImage: 'ubuntu-16.04'
