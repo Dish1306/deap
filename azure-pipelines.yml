@@ -77,30 +77,40 @@ jobs:
   - job: Aarch64_Manylinux2014Build
     pool:
       vmImage: 'ubuntu-18.04'
-    container: quay.io/pypa/manylinux2014_aarch64:latest
-    variables:
-      python: /opt/python/cp37-cp37m/bin/python
+    strategy:
+      matrix:
+        Py35 Arm64:
+          python.code: 'cp35-cp35m'
+          manylinux: 'manylinux_aarch64'
+        Py36 Arm64:
+          python.code: 'cp36-cp36m'
+          manylinux: 'manylinux_aarch64'
+        Py37 Arm64:
+          python.code: 'cp37-cp37m'
+          manylinux: 'manylinux_aarch64'
+        Py38 Arm64:
+          python.code: 'cp38-cp38'
+          manylinux: 'manylinux_aarch64'
+        Py39 Arm64:
+          python.code: 'cp39-cp39'
+          manylinux: 'manylinux_aarch64'
     steps:
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
     - script: |
-        for PYBIN in /opt/python/*/bin; do
-          "${PYBIN}/pip" install --user numpy twine
-        done
-      displayName: 'Install dependencies and build tools'
-    - script: |
-        for PYBIN in /opt/python/*/bin; do
-          "${PYBIN}/pip" wheel . -w wheelhouse/
-        done
-      displayName: 'Build wheels'
-    - script: |
-        for whl in wheelhouse/deap*.whl; do
-          auditwheel repair "$whl" --plat manylinux2014_aarch64 -w wheelhouse-manylinux/
-        done
-      displayName: 'Audit wheels'
-    - script: |
-        $(python) -m twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar wheelhouse-manylinux/*
-      displayName: 'Publish wheel to PyPi'
+        set -xeo pipefail
+        docker run -v $(pwd):"${DOCKER_ROOT_DIRECTORY}":rw,z \
+                 -e HOST_USER_ID \
+                  "arm64v8/ubuntu:bionic" \
+                  bash -c "cd $DOCKER_ROOT_DIRECTORY;
+                  apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git && \
+                  $PYTHON -m pip install --upgrade pip setuptools wheel pytest-azurepipelines twine && \
+                  $PYTHON -m pip wheel . -w wheelhouse/"
+    displayName: 'Running AArch64 build'
+    env:
+      DOCKER_ROOT_DIRECTORY: "/home/source_root"
+      HOST_USER_ID: $(id -u)
+      PYTHON: "python$(python.version)"
       
   - job: Manylinux2010Build
     pool:
