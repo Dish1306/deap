@@ -12,13 +12,17 @@ jobs:
     strategy:
       matrix:
         Py36 Arm64:
-          python.version: '3.6'
+          python.version: 'cp36-cp36m'
+          manylinux: 'manylinux_aarch64'
         Py37 Arm64:
-          python.version: '3.7'
+          python.version: 'cp37-cp37m'
+          manylinux: 'manylinux_aarch64'
         Py38 Arm64:
-          python.version: '3.8'
+          python.version: 'cp38-cp38'
+          manylinux: 'manylinux_aarch64'
         Py39 Arm64:
-          python.version: '3.9'
+          python.version: 'cp39-cp39'
+          manylinux: 'manylinux_aarch64'
     steps:
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
@@ -26,15 +30,16 @@ jobs:
         set -xeo pipefail
         docker run -v $(pwd):"${DOCKER_ROOT_DIRECTORY}":rw,z \
                    -e HOST_USER_ID \
-                    "arm64v8/ubuntu:bionic" \
+                    "quay.io/pypa/manylinux2014_aarch64:latest" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
-                    apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev build-essential && \
-                    $PYTHON -m pip install --upgrade pip && \
-                    $PYTHON -m pip install setuptools wheel pytest-azurepipelines twine numpy && \
-                    $PYTHON -m pip wheel . -w wheelhouse/ && \
-                    auditwheel repair "$whl" --plat manylinux2010_x86_64 -w wheelhouse-manylinux"
+                    #yum update -qq && yum install -qq make $PYTHON python3-pip lib$PYTHON-devel build-essential && \
+                    "${PYBIN}/pip" install --upgrade pip && \
+                    "${PYBIN}/pip" install setuptools wheel pytest-azurepipelines twine numpy && \
+                    "${PYBIN}/pip" pip wheel . -w wheelhouse/ && \
+                    auditwheel repair "$whl" --plat manylinux2014_aarch64 -w wheelhouse-manylinux"
       displayName: 'Running AArch64 build'
       env:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
         HOST_USER_ID: $(id -u)
         PYTHON: "python$(python.version)"
+        PYBIN: /opt/python/"$(python.version)"/bin
