@@ -41,4 +41,4 @@ jobs:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
         HOST_USER_ID: $(id -u)
         PYTHON: "python$(python.version)"
-        PYBIN: /opt/python/"$(python.version)"/bin
+        PYBIN: /opt/python/$(python.version)/bin
