@@ -29,7 +29,8 @@ jobs:
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git build-essential libssl-dev libffi-dev cargo snapd && \
-                    $PYTHON -m pip install --upgrade pip setuptools setuptools-rust wheel pytest-azurepipelines twine numpy && \
+                    $PYTHON -m pip install --upgrade pip && \
+                    $PYTHON -m pip install setuptools setuptools-rust wheel pytest-azurepipelines twine numpy && \
                     $PYTHON setup.py bdist_wheel"
       displayName: 'Running AArch64 build'
       env:
