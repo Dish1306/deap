@@ -32,7 +32,7 @@ jobs:
                     "quay.io/pypa/manylinux2014_aarch64:latest" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     "${PYBIN}/pip" install --upgrade pip && \
-                    "${PYBIN}/pip" install setuptools wheel pytest-azurepipelines twine numpy && \
+                    "${PYBIN}/pip" install twine numpy && \
                     "${PYBIN}/pip" wheel . -w wheelhouse/ && \
                     auditwheel repair wheelhouse/deap*.whl --plat manylinux2014_aarch64 -w wheelhouse-manylinux && \
                     "${PYBIN}/python" -m twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar wheelhouse-manylinux/*"
