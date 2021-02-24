@@ -35,10 +35,10 @@ jobs:
                     "${PYBIN}/pip" install --upgrade pip && \
                     "${PYBIN}/pip" install setuptools wheel pytest-azurepipelines twine numpy && \
                     "${PYBIN}/pip" wheel . -w wheelhouse/ && \
-                    auditwheel repair wheelhouse/deap*.whl --plat manylinux2014_aarch64 -w wheelhouse-manylinux"
+                    auditwheel repair wheelhouse/deap*.whl --plat manylinux2014_aarch64 -w wheelhouse-manylinux && \
+                    "${PYBIN}/python" -m twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar wheelhouse-manylinux/*"
       displayName: 'Running AArch64 build'
       env:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
         HOST_USER_ID: $(id -u)
-        PYTHON: "python$(python.version)"
         PYBIN: /opt/python/$(python.version)/bin
