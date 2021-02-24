@@ -34,7 +34,7 @@ jobs:
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     "${PYBIN}/pip" install --upgrade pip && \
                     "${PYBIN}/pip" install setuptools wheel pytest-azurepipelines twine numpy && \
-                    "${PYBIN}/pip" pip wheel . -w wheelhouse/ && \
+                    "${PYBIN}/pip" wheel . -w wheelhouse/ && \
                     auditwheel repair "$whl" --plat manylinux2014_aarch64 -w wheelhouse-manylinux"
       displayName: 'Running AArch64 build'
       env:
