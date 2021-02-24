@@ -27,7 +27,6 @@ jobs:
     - script: docker run --rm --privileged hypriot/qemu-register
       displayName: 'Registering qemu'
     - script: |
-        set -xeo pipefail
         docker run -v $(pwd):"${DOCKER_ROOT_DIRECTORY}":rw,z \
                    -e HOST_USER_ID \
                     "quay.io/pypa/manylinux2014_aarch64:latest" \
