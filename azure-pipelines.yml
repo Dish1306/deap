@@ -5,31 +5,7 @@
 
 trigger: none
 
-jobs: 
-  - job: macOS10_14Build
-    pool:
-      vmImage: 'macOS-10.14'
-    strategy:
-      matrix:
-        Python39_macOS1014:
-          python.version: '3.9'
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(python.version)'
-      displayName: 'Use Python $(python.version)'
-    - script: |
-        python -m pip install --upgrade pip
-        pip install numpy
-      displayName: 'Install dependencies'
-    - script: |
-        pip install wheel twine
-      displayName: 'Install build tools'
-    - script: |
-        python setup.py sdist bdist_wheel
-        twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar dist/*
-      displayName: 'Publish wheel to PyPi'
-  
+jobs:
   - job: Aarch64_Manylinux2014Build
     pool:
       vmImage: 'ubuntu-18.04'
@@ -53,36 +29,10 @@ jobs:
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git build-essential libssl-dev libffi-dev cargo snapd && \
-                    $PYTHON -m pip install --upgrade pip setuptools wheel pytest-azurepipelines twine numpy && \
+                    $PYTHON -m pip install --upgrade pip setuptools setuptools-rust wheel pytest-azurepipelines twine numpy && \
                     $PYTHON setup.py bdist_wheel"
       displayName: 'Running AArch64 build'
       env:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
         HOST_USER_ID: $(id -u)
         PYTHON: "python$(python.version)"
-      
-  - job: Manylinux2010Build
-    pool:
-      vmImage: 'ubuntu-16.04'
-    container: quay.io/pypa/manylinux2010_x86_64:latest
-    variables:
-      python: /opt/python/cp37-cp37m/bin/python
-    steps:
-    - script: |
-        for PYBIN in /opt/python/*/bin; do
-          "${PYBIN}/pip" install --user numpy twine
-        done
-      displayName: 'Install dependencies and build tools'
-    - script: |
-        for PYBIN in /opt/python/*/bin; do
-          "${PYBIN}/pip" wheel . -w wheelhouse/
-        done
-      displayName: 'Build wheels'
-    - script: |
-        for whl in wheelhouse/deap*.whl; do
-          auditwheel repair "$whl" --plat manylinux2010_x86_64 -w wheelhouse-manylinux/
-        done
-      displayName: 'Audit wheels'
-    - script: |
-        $(python) -m twine upload -r pypi -u $(twineUsername) -p $(twinePassword) --skip-existing --disable-progress-bar wheelhouse-manylinux/*
-      displayName: 'Publish wheel to PyPi'
