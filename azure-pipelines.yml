@@ -28,10 +28,11 @@ jobs:
                    -e HOST_USER_ID \
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
-                    apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git build-essential libssl-dev libffi-dev cargo snapd && \
+                    apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev build-essential && \
                     $PYTHON -m pip install --upgrade pip && \
-                    $PYTHON -m pip install setuptools setuptools-rust wheel pytest-azurepipelines twine numpy && \
-                    $PYTHON setup.py bdist_wheel"
+                    $PYTHON -m pip install setuptools wheel pytest-azurepipelines twine numpy && \
+                    $PYTHON -m pip wheel . -w wheelhouse/ && \
+                    auditwheel repair "$whl" --plat manylinux2010_x86_64 -w wheelhouse-manylinux"
       displayName: 'Running AArch64 build'
       env:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
