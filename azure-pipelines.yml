@@ -53,10 +53,8 @@ jobs:
                     "arm64v8/ubuntu:bionic" \
                     bash -c "cd $DOCKER_ROOT_DIRECTORY;
                     apt-get update -qq && apt-get install -qq make $PYTHON python3-pip lib$PYTHON-dev git build-essential libssl-dev libffi-dev cargo snapd && \
-                    snap install rustup --classic && \
-                    rustup default stable && \
                     $PYTHON -m pip install --upgrade pip setuptools wheel pytest-azurepipelines twine numpy && \
-                    $PYTHON -m pip wheel . -w wheelhouse/"
+                    $PYTHON setup.py bdist_wheel"
       displayName: 'Running AArch64 build'
       env:
         DOCKER_ROOT_DIRECTORY: "/home/source_root"
